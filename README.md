@@ -68,7 +68,7 @@ class Person {
 public:
     /**
      * Constructor: Initializes a new Person object with specified attributes.
-     * 
+     *
      * @param name A reference to the person's name as a string.
      * @param age The person's age as an unsigned integer.
      * @param gender A reference to the person's gender as a string ("Female" or "Male").
@@ -95,7 +95,7 @@ public:
     /**
      * Overloads the spaceship operator for comparing Person objects.
      * Enables sorting and direct comparison based on an internal logic.
-     * 
+     *
      * @param other The other Person object to compare with.
      * @return std::strong_ordering Result of the comparison for ordering.
      */
@@ -104,7 +104,7 @@ public:
     /**
      * Outputs information about the person. If a filename is provided,
      * writes the information to a file. Otherwise, prints to standard output.
-     * 
+     *
      * @param file_name Optional parameter for the file name to write information to.
      */
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
@@ -135,11 +135,9 @@ To ensure the `Account` class functions correctly and securely within our system
 
 All member variables not directly initialized via the constructor must be zero-initialized to ensure a clean and predictable starting state. This is particularly important for numeric and boolean data types such as `balance` and `account_status`.
 
-
 ### 2. Generation of Account Number
 
 The account number is a unique 16-digit identifier stored as a string. During the construction of an `Account` object, this number must be randomly generated to ensure uniqueness. Consider using functions from `<random>` or another suitable method for generating this number.
-
 
 ### 3. Secure Access to Credentials
 
@@ -149,16 +147,13 @@ Access to sensitive credentials (CVV2, password, expiration date) requires the o
 
 Setters that modify account information require the bank's fingerprint for authentication. This ensures that only the bank can authorize changes to critical account information. Similar to credential access, verify the provided fingerprint against the bank's fingerprint before applying changes.
 
-
 ### 5. Implementation of the Spaceship Operator
 
 Implement the spaceship operator for account comparison, primarily to facilitate the use of `Account` objects as keys in a `std::map`. Compare accounts based on their unique account numbers.
 
-
 ### 6. Information Display with `get_info`
 
 Implement the `get_info` method to display or save account information. Exclude credentials from the output. If a file name is provided, write the information to a file; otherwise, print it to the terminal. Ensure the output is well-formatted and informative.
-
 
 ```cpp
 // Define guards to prevent the multiple inclusion of this header file
@@ -182,7 +177,7 @@ class Account {
 public:
     /**
      * Constructor: Initializes a new Account object with a specific owner, bank, and password.
-     * 
+     *
      * @param owner A constant pointer to a Person object representing the account owner.
      * @param bank A constant pointer to a Bank object the account is associated with.
      * @param password A reference to the account's password used for authentication and access.
@@ -213,7 +208,7 @@ public:
     /**
      * Overloads the spaceship operator for comparing Account objects.
      * Allows sorting and comparison based on the account number.
-     * 
+     *
      * @param other The other Account object to compare with.
      * @return std::strong_ordering The result of the comparison.
      */
@@ -222,7 +217,7 @@ public:
     /**
      * Outputs information about the account. If a file name is provided, writes to a file;
      * otherwise, prints to standard output. Requires the owner's fingerprint for authentication.
-     * 
+     *
      * @param file_name Optional parameter for specifying a file to write information to.
      */
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
@@ -245,6 +240,7 @@ private:
 ```
 
 ---
+
 ## **Bank Class Implementation Guide**
 
 The `Bank` class is a cornerstone of our banking system simulation, responsible for managing all interactions between accounts and their owners, handling financial operations like deposits, withdrawals, and loans, and ensuring secure transactions. This class encapsulates the complexity of a banking system and serves as an excellent case study in object-oriented programming and security best practices.
@@ -311,7 +307,7 @@ When a customer requests a loan, the bank evaluates their eligibility based on t
 
 - **Owner Authentication**: Verify the owner's identity by comparing the hash of the provided fingerprint against the owner's stored hashed fingerprint.
 - **Loan Amount Calculation**: The maximum loan amount a customer can request is determined by their socioeconomic rank. Specifically, a customer can borrow up to `(10 * rank)%` of the total balance across all their accounts.
-   - For example, if a customer has a socioeconomic rank of 8 and a total balance of $10,000 across all accounts, they can request a loan of up to 80% of $10,000, which equals $8,000.
+  - For example, if a customer has a socioeconomic rank of 8 and a total balance of $10,000 across all accounts, they can request a loan of up to 80% of $10,000, which equals $8,000.
 - **Total Loan Limit**: Ensure the requested loan does not exceed the customer's loan limit, considering their current unpaid loans.
 - **Loan Distribution**: If the loan request is approved, distribute the loan amount to the specified account and update the relevant loan tracking variables (`bank_total_loan`, `customer_2_unpaid_loan`).
 
@@ -322,7 +318,7 @@ When a customer pays back part or all of a loan, the bank processes the payment 
 - **Interest**: Incorporate an additional interest charge on the loan payment. The interest serves as the bank's profit and is added to `bank_total_balance`.
 - **Loan Update**: Deduct the payment from the customer's total unpaid loan and update `customer_2_paid_loan` and `customer_2_unpaid_loan` accordingly.
 - **Socioeconomic Rank Upgrade**: After the payment, check if the customer's total paid loan reaches a threshold for upgrading their socioeconomic rank. The threshold is `10^rank * 1000`. If the threshold is met, increase the customer's rank by one.
-   - For instance, if a customer with a rank of 4 pays off a total loan amount reaching $10,000, their rank is upgraded to 5.
+  - For instance, if a customer with a rank of 4 pays off a total loan amount reaching $10,000, their rank is upgraded to 5.
 
 ### 15. Upgrading Socioeconomic Rank
 
@@ -356,7 +352,7 @@ class Bank {
 public:
     /**
      * Constructor: Initializes a new Bank object with its name and security fingerprint.
-     * 
+     *
      * @param bank_name The name of the bank, represented as a string.
      * @param bank_fingerprint A unique identifier for the bank's security, also as a string.
      */
@@ -384,7 +380,7 @@ public:
     /**
      * Outputs information about the bank. If a filename is provided, writes to the file.
      * Otherwise, prints to standard output. Access restricted to authenticated users.
-     * 
+     *
      * @param file_name Optional parameter for output file name.
      */
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
@@ -422,7 +418,7 @@ Common tasks such as hashing fingerprints, generating random numbers, or any uti
 - **Maintainability**: Centralizing utility functions makes your codebase easier to manage and update.
 - **Readability**: Keeps your class implementations clean and focused on their primary responsibilities.
 
-***Remember to keep your code DRY (Don't Repeat Yourself)!***
+**_Remember to keep your code DRY (Don't Repeat Yourself)!_**
 
 ---
 
@@ -458,7 +454,7 @@ int main(int argc, char **argv)
 ```
 
 <p align="center">
-  <img src="./Resource/Say_Hello_To_Other_Errors.webp" alt="Say Hello To Other Errors" style="width: 40%;">
+  <img src="./Resource/Thank_us_later.jpg" alt="Say Hello To Other Errors" style="width: 60%;">
 </p>
 
 **Best Regards, Hamidi**
