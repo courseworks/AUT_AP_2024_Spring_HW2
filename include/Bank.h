@@ -37,7 +37,7 @@ public:
     // Bank Operations
     Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password); // Creates a new account for a specified owner.
     bool delete_account(Account& account, const std::string& owner_fingerprint); // Deletes a specified account after verifying owner.
-    bool delete_customer(Account& account, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
+    bool delete_customer(Person& owner, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
     bool deposit(Account& account, const std::string& owner_fingerprint, double amount); // Deposits money into a specified account after owner verification.
     bool withdraw(Account& account, const std::string& owner_fingerprint, double amount); // Withdraws money from a specified account after owner verification.
     bool transfer(Account& source, Account& destination, const std::string& owner_fingerprint,

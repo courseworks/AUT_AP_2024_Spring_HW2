@@ -281,7 +281,7 @@ Ensure that all member variables not explicitly initialized in the constructor a
 
 - **Creating Accounts**: Authenticate the owner's identity via their fingerprint before creating an account. Update all related member variables accordingly.
 - **Deleting Accounts**: Authenticate the owner before deletion. Update all related member variables to reflect the change.
-- **Deleting Customers**: Remove all information related to a person from the bank's records without "deleting the person." Include a humorous note: "Remember, deleting a customer's account doesn't mean we're deleting the person!"
+- **Deleting Customers**: Remove all information related to a person from the bank's records without "deleting the person.", **Remember, deleting a customer's account doesn't mean we're deleting the person!**
 
 ### 9. Financial Operations
 
@@ -366,7 +366,7 @@ public:
     // Bank Operations
     Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password); // Creates a new account for a specified owner.
     bool delete_account(Account& account, const std::string& owner_fingerprint); // Deletes a specified account after verifying owner.
-    bool delete_customer(Account& account, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
+    bool delete_customer(Person& owner, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
     bool deposit(Account& account, const std::string& owner_fingerprint, double amount); // Deposits money into a specified account after owner verification.
     bool withdraw(Account& account, const std::string& owner_fingerprint, double amount); // Withdraws money from a specified account after owner verification.
     bool transfer(Account& source, Account& destination, const std::string& owner_fingerprint,
