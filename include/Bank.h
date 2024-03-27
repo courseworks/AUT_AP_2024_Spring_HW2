@@ -1,87 +1,70 @@
-// Prevents this header file from being included multiple times in the same file
-#ifndef BANK_H
+#ifndef BANK_H // Prevents double inclusion of this header
 #define BANK_H
 
-// Includes necessary libraries and header files
-#include <compare> // For std::strong_ordering, used in comparison operations
-#include <map> // For std::map, a key-value pair container
-#include <optional> // For std::optional, to handle optional parameters
-#include <string> // For std::string, to use string type
-#include <vector> // For std::vector, a dynamic array
+#include <compare>  // For std::strong_ordering
+#include <map>      // For std::map
+#include <optional> // For std::optional
+#include <string>   // For std::string
+#include <vector>   // For std::vector
 
-// Include the Account and Person class headers for their definitions
-#include "Account.h"
-#include "Person.h"
+class Account; // Forward declaration of Account
+class Person; // Forward declaration of Person
 
-/**
- * The Bank class represents a banking institution, encapsulating data and operations
- * related to customers, their accounts, and financial transactions such as deposits,
- * withdrawals, and loans. It provides methods for managing these entities and operations
- * securely and efficiently.
- */
+// Represents a banking institution
 class Bank {
 public:
-    /**
-     * Constructor: Initializes a new Bank object with its name and security fingerprint.
-     *
-     * @param bank_name The name of the bank, represented as a string.
-     * @param bank_fingerprint A unique identifier for the bank's security, also as a string.
-     */
+    // Constructor with bank name and security fingerprint
     Bank(const std::string& bank_name, const std::string& bank_fingerprint);
 
-    /**
-     * Destructor: Handles cleanup of dynamically allocated resources to prevent memory leaks.
-     */
-    ~Bank();
+    ~Bank(); // Destructor
 
-    // Bank Operations
-    Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password); // Creates a new account for a specified owner.
-    bool delete_account(Account& account, const std::string& owner_fingerprint); // Deletes a specified account after verifying owner.
-    bool delete_customer(Person& owner, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
-    bool deposit(Account& account, const std::string& owner_fingerprint, double amount); // Deposits money into a specified account after owner verification.
-    bool withdraw(Account& account, const std::string& owner_fingerprint, double amount); // Withdraws money from a specified account after owner verification.
+    // Bank operations
+    Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password);
+    bool delete_account(Account& account, const std::string& owner_fingerprint);
+    bool delete_customer(Person& owner, const std::string& owner_fingerprint);
+    bool deposit(Account& account, const std::string& owner_fingerprint, double amount);
+    bool withdraw(Account& account, const std::string& owner_fingerprint, double amount);
     bool transfer(Account& source, Account& destination, const std::string& owner_fingerprint,
-                  const std::string& CVV2, const std::string& password, const std::string& exp_date, double amount); // Transfers money between accounts after verification.
-    bool take_loan(Account& account, const std::string& owner_fingerprint, double amount); // Grants a loan to a specified account after owner verification.
-    bool pay_loan(Account& account, double amount); // Accepts loan repayment from a specified account.
+                  const std::string& CVV2, const std::string& password, const std::string& exp_date, double amount);
+    bool take_loan(Account& account, const std::string& owner_fingerprint, double amount);
+    bool pay_loan(Account& account, double amount);
 
-    // Accessor methods (Getters)
-    const std::string& get_bank_name() const; // Returns the name of the bank.
-    size_t get_hashed_bank_fingerprint() const; // Returns the hashed bank fingerprint for security.
+    // Getters
+    const std::string& get_bank_name() const;
+    size_t get_hashed_bank_fingerprint() const;
 
-    // Accessor methods requiring bank authentication. (these ARE required for testing)
-    const std::vector<Person*>& get_bank_customers(std::string& bank_fingerprint) const; // Returns the list of bank customers.
-    const std::vector<Account*>& get_bank_accounts(std::string& bank_fingerprint) const; // Returns the list of bank accounts.
-    const std::map<Account*, Person*>& get_account_2_customer_map(std::string& bank_fingerprint) const; // Returns the map from accounts to their owners.
-    const std::map<Person*, std::vector<Account*>>& get_customer_2_accounts_map(std::string& bank_fingerprint) const; // Returns the map from customers to their accounts.
-    const std::map<Person*, double>& get_customer_2_paid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of loan paid.
-    const std::map<Person*, double>& get_customer_2_unpaid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of loan unpaid.
-    double get_bank_total_balance(std::string& bank_fingerprint) const; // Returns the total profit the bank has accumulated.
-    double get_bank_total_loan(std::string& bank_fingerprint) const; // Returns the total amount of loans the bank has issued.
+    // Getters requiring bank authentication
+    const std::vector<Person*>& get_bank_customers(std::string& bank_fingerprint) const;
+    const std::vector<Account*>& get_bank_accounts(std::string& bank_fingerprint) const;
+    const std::map<Account*, Person*>& get_account_2_customer_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, std::vector<Account*>>& get_customer_2_accounts_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, double>& get_customer_2_paid_loan_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, double>& get_customer_2_unpaid_loan_map(std::string& bank_fingerprint) const;
+    double get_bank_total_balance(std::string& bank_fingerprint) const;
+    double get_bank_total_loan(std::string& bank_fingerprint) const;
 
-    // Operators
-    Account* operator[](size_t index) const; // Provides direct access to an account using its index in the bank's list.
+    // Account Setters requiring owner and bank authentication
+    bool set_owner(Account& account, const Person* new_owner, std::string& owner_fingerprint, std::string& bank_fingerprint);
 
-    /**
-     * Outputs information about the bank. If a filename is provided, writes to the file.
-     * Otherwise, prints to standard output. Access restricted to authenticated users.
-     *
-     * @param file_name Optional parameter for output file name.
-     */
+    // Account Setters requiring bank authentication
+    bool set_account_status(Account& account, bool status, std::string& bank_fingerprint);
+    bool set_exp_date(Account& account, std::string& exp_date, std::string& bank_fingerprint);
+
+    // Outputs bank information, supports writing to file
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
 
 private:
     // Private member variables
-    const std::string bank_name; // The bank's name.
-    const size_t hashed_bank_fingerprint; // A hashed version of the bank's fingerprint for security.
-    std::vector<Person*> bank_customers; // A list of pointers to the bank's customers.
-    std::vector<Account*> bank_accounts; // A list of pointers to the bank's accounts.
-    std::map<Account*, Person*> account_2_customer; // Maps accounts to their owners.
-    std::map<Person*, std::vector<Account*>> customer_2_accounts; // Maps customers to their lists of accounts.
-    std::map<Person*, double> customer_2_paid_loan; // Maps customers to the amounts of loans they've repaid.
-    std::map<Person*, double> customer_2_unpaid_loan; // Maps customers to the amounts of loans they owe.
-    double bank_total_balance; // The total profit the bank has accumulated.
-    double bank_total_loan; // The total amount of loans the bank has issued.
+    const std::string bank_name;
+    const size_t hashed_bank_fingerprint;
+    std::vector<Person*> bank_customers;
+    std::vector<Account*> bank_accounts;
+    std::map<Account*, Person*> account_2_customer;
+    std::map<Person*, std::vector<Account*>> customer_2_accounts;
+    std::map<Person*, double> customer_2_paid_loan;
+    std::map<Person*, double> customer_2_unpaid_loan;
+    double bank_total_balance; // Total bank profit
+    double bank_total_loan; // Total loans issued
 };
 
 #endif // BANK_H

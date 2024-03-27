@@ -50,72 +50,46 @@ The socioeconomic rank is an integer value ranging from 1 to 10, representing th
 The spaceship operator (`<=>`) is required for enabling comparisons between `Person` objects, particularly when using `Person` instances as keys in a `std::map`. Implement this operator to compare `Person` objects based on their `hashed_fingerprint`, as it is unique and provides a reliable method for comparison.
 
 ```cpp
-// Define guards to prevent multiple inclusions of this header file
-#ifndef PERSON_H
+#ifndef PERSON_H // Prevents double inclusion of this header
 #define PERSON_H
 
-// Include necessary libraries
-#include <compare> // For std::strong_ordering used in comparison operations
-#include <optional> // For std::optional, to handle optional parameters
-#include <string> // For std::string, to use string type
+#include <compare>  // For std::strong_ordering
+#include <optional> // For std::optional
+#include <string>   // For std::string
 
-/**
- * The Person class models an individual with various personal attributes.
- * It supports operations to create, access, and modify these attributes
- * securely, ensuring data encapsulation and integrity.
- */
+// Models an individual with personal attributes
 class Person {
 public:
-    /**
-     * Constructor: Initializes a new Person object with specified attributes.
-     *
-     * @param name A reference to the person's name as a string.
-     * @param age The person's age as an unsigned integer.
-     * @param gender A reference to the person's gender as a string ("Female" or "Male").
-     * @param fingerprint A reference to the person's unique fingerprint as a string.
-     * @param socioeconomic_rank The person's socioeconomic rank as an unsigned integer (1 to 10).
-     * @param is_alive A boolean flag indicating the person's living status.
-     */
+    // Constructor with personal attributes
     Person(std::string &name, size_t age, std::string &gender,
            std::string &fingerprint, size_t socioeconomic_rank, bool is_alive);
 
-    // Accessor methods: Getters
-    std::string get_name() const; // Returns the person's name
-    size_t get_age() const; // Returns the person's age
-    std::string get_gender() const; // Returns the person's gender
-    size_t get_hashed_fingerprint() const; // Returns a hash of the person's fingerprint for privacy
-    size_t get_socioeconomic_rank() const; // Returns the person's socioeconomic rank
-    bool get_is_alive() const; // Returns true if the person is alive, false otherwise
+    // Getters
+    std::string get_name() const;
+    size_t get_age() const;
+    std::string get_gender() const;
+    size_t get_hashed_fingerprint() const;
+    size_t get_socioeconomic_rank() const;
+    bool get_is_alive() const;
 
-    // Mutator methods: Setters
-    bool set_age(size_t age); // Sets the person's age, returns true on success
-    bool set_socioeconomic_rank(size_t rank); // Sets the socioeconomic rank, returns true on success
-    bool set_is_alive(bool is_alive); // Sets the person's alive status, returns true on success
+    // Setters
+    bool set_age(size_t age);
+    bool set_socioeconomic_rank(size_t rank);
+    bool set_is_alive(bool is_alive);
 
-    /**
-     * Overloads the spaceship operator for comparing Person objects.
-     * Enables sorting and direct comparison based on an internal logic.
-     *
-     * @param other The other Person object to compare with.
-     * @return std::strong_ordering Result of the comparison for ordering.
-     */
+    // Spaceship operator for Person comparison
     std::strong_ordering operator<=>(const Person &other) const;
 
-    /**
-     * Outputs information about the person. If a filename is provided,
-     * writes the information to a file. Otherwise, prints to standard output.
-     *
-     * @param file_name Optional parameter for the file name to write information to.
-     */
+    // Outputs person information, supports writing to file, if passed
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
 
 private:
-    const std::string name; // The person's name
-    size_t age; // The person's age
-    const std::string gender; // The person's gender ("Female" or "Male")
-    const size_t hashed_fingerprint; // A hash of the person's fingerprint for privacy
-    size_t socioeconomic_rank; // The person's socioeconomic rank (1 to 10)
-    bool is_alive; // Indicates if the person is alive
+    const std::string name;
+    size_t age;
+    const std::string gender;
+    const size_t hashed_fingerprint;
+    size_t socioeconomic_rank;
+    bool is_alive;
 };
 
 #endif // PERSON_H
@@ -143,97 +117,65 @@ The account number is a unique 16-digit identifier stored as a string. During th
 
 Access to sensitive credentials (CVV2, password, expiration date) requires the owner's fingerprint authentication. Implement a verification mechanism that compares the hashed version of the provided fingerprint against the owner's hashed fingerprint. If authentication fails, throw an appropriate error.
 
-### 4. Secure Modification of Account Information
-
-Setters that modify account information require the bank's fingerprint for authentication. This ensures that only the bank can authorize changes to critical account information. Similar to credential access, verify the provided fingerprint against the bank's fingerprint before applying changes.
-
-### 5. Implementation of the Spaceship Operator
+### 4. Implementation of the Spaceship Operator
 
 Implement the spaceship operator for account comparison, primarily to facilitate the use of `Account` objects as keys in a `std::map`. Compare accounts based on their unique account numbers.
 
-### 6. Information Display with `get_info`
+### 5. Information Display with `get_info`
 
 Implement the `get_info` method to display or save account information. Exclude credentials from the output. If a file name is provided, write the information to a file; otherwise, print it to the terminal. Ensure the output is well-formatted and informative.
 
 ```cpp
-// Define guards to prevent the multiple inclusion of this header file
-#ifndef ACCOUNT_H
+#ifndef ACCOUNT_H // Prevents double inclusion of this header
 #define ACCOUNT_H
 
-// Include necessary libraries and dependencies
-#include <compare> // For std::strong_ordering used in comparison operations
-#include <optional> // For std::optional, to handle optional parameters
-#include <string> // For std::string, to use string type
+#include <compare>  // For std::strong_ordering
+#include <optional> // For std::optional
+#include <string>   // For std::string
 
-#include "Bank.h" // Include the Bank class definition
-#include "Person.h" // Include the Person class definition
+class Bank; // Forward declaration of Bank
+class Person; // Forward declaration of Person
 
-/**
- * The Account class represents a bank account, encapsulating details such as
- * the account owner, the associated bank, balance, status, and other credentials.
- * It supports secure access and modification of these details.
- */
+// Represents a bank account with owner, bank, balance, status, and credentials
 class Account {
+    friend class Bank; // Make Bank a friend of Account for full access
+
 public:
-    /**
-     * Constructor: Initializes a new Account object with a specific owner, bank, and password.
-     *
-     * @param owner A constant pointer to a Person object representing the account owner.
-     * @param bank A constant pointer to a Bank object the account is associated with.
-     * @param password A reference to the account's password used for authentication and access.
-     */
+    // Constructor with owner, bank, and password
     Account(const Person* const owner, const Bank* const bank, std::string& password);
 
-    // Accessor methods (Getters)
-    const Person* get_owner() const; // Returns a pointer to the account owner
-    double get_balance() const; // Returns the current account balance
-    std::string get_account_number() const; // Returns the account number
-    bool get_status() const; // Returns the account status (true for active, false for suspended)
+    // Getters
+    const Person* get_owner() const;
+    double get_balance() const;
+    std::string get_account_number() const;
+    bool get_status() const;
 
-    /**
-     * Accessor methods requiring owner authentication.
-     * These provide sensitive information and require the owner's fingerprint for security.
-     */
-    std::string get_CVV2(std::string& owner_fingerprint) const; // Returns the CVV2 code after authentication
-    std::string get_password(std::string& owner_fingerprint) const; // Returns the password after authentication
-    std::string get_exp_date(std::string& owner_fingerprint) const; // Returns the expiration date after authentication
+    // Getters requiring owner's fingerprint for authentication
+    std::string get_CVV2(std::string& owner_fingerprint) const;
+    std::string get_password(std::string& owner_fingerprint) const;
+    std::string get_exp_date(std::string& owner_fingerprint) const;
 
-    // Mutator methods (Setters) requiring bank authentication
-    bool set_owner(const Person*, std::string& bank_fingerprint); // Sets a new account owner after bank authentication
-    bool set_balance(double balance, std::string& bank_fingerprint); // Updates the account balance after bank authentication
-    bool set_account_status(bool status, std::string& bank_fingerprint); // Changes the account status after bank authentication
-    bool set_password(std::string& password, std::string& bank_fingerprint); // Updates the password after bank authentication
-    bool set_exp_date(std::string& exp_date, std::string& bank_fingerprint); // Sets a new expiration date after bank authentication
+    // Setters requiring owner's fingerprint for authentication
+    bool set_password(std::string& password, std::string& bank_fingerprint);
 
-    /**
-     * Overloads the spaceship operator for comparing Account objects.
-     * Allows sorting and comparison based on the account number.
-     *
-     * @param other The other Account object to compare with.
-     * @return std::strong_ordering The result of the comparison.
-     */
+    // Spaceship operator for Account comparison
     std::strong_ordering operator<=>(const Account& other) const;
 
-    /**
-     * Outputs information about the account. If a file name is provided, writes to a file;
-     * otherwise, prints to standard output. Requires the owner's fingerprint for authentication.
-     *
-     * @param file_name Optional parameter for specifying a file to write information to.
-     */
+    // Outputs account information, supports writing to file
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
 
 private:
-    // Member Variables
-    Person* owner; // Pointer to the account owner
-    const Bank* bank; // Pointer to the associated bank
-    const std::string account_number; // Unique account number within the bank
-    double balance; // Current account balance
-    bool account_status; // Account status (true for active, false for suspended)
+    // Member variables
+    Person* owner;
+    const Bank* bank;
+    const std::string account_number;
+    double balance;
+    bool account_status;
 
-    // Credentials Member Variables
-    const std::string CVV2; // Card Verification Value 2 for transaction security
-    std::string password; // Account password for access control
-    std::string exp_date; // Account expiration date in YY-MM format
+    // Credential variables
+    const std::string CVV2;
+    std::string password;
+    std::string exp_date;
 };
 
 #endif // ACCOUNT_H
@@ -291,17 +233,14 @@ Ensure that all member variables not explicitly initialized in the constructor a
 
 ### 10. Socioeconomic Rank Upgrades
 
-Implement logic to upgrade a person's socioeconomic rank based on their loan repayment history. For example, paying off a total loan amount equal to `10^rank * 1000` triggers a rank upgrade.
+Implement logic to upgrade a person's socioeconomic rank based on their loan repayment history. For example, paying off a total loan amount equal to `10^rank` triggers a rank upgrade.
 
 ### 11. Displaying Bank Information
 
 Implement the `get_info` function to output detailed bank information in an informative and well-formatted manner. Avoid disclosing any credentials.
 
-### 12. Index-based Account Access
 
-Implement the bracket operator to provide direct access to accounts by their index in `bank_accounts`, facilitating easy retrieval of account information.
-
-### 13. Taking a Loan
+### 12. Taking a Loan
 
 When a customer requests a loan, the bank evaluates their eligibility based on the following criteria:
 
@@ -311,106 +250,89 @@ When a customer requests a loan, the bank evaluates their eligibility based on t
 - **Total Loan Limit**: Ensure the requested loan does not exceed the customer's loan limit, considering their current unpaid loans.
 - **Loan Distribution**: If the loan request is approved, distribute the loan amount to the specified account and update the relevant loan tracking variables (`bank_total_loan`, `customer_2_unpaid_loan`).
 
-### 14. Paying a Loan
+### 13. Paying a Loan
 
 When a customer pays back part or all of a loan, the bank processes the payment as follows:
 
-- **Interest**: Incorporate an additional interest charge on the loan payment. The interest serves as the bank's profit and is added to `bank_total_balance`.
+- **Interest**: Incorporate an additional `10/rank` percent interest charge on the loan payment. The interest serves as the bank's profit and is added to `bank_total_balance`. this amount is calculated when you take a loan, not when you pay it.
 - **Loan Update**: Deduct the payment from the customer's total unpaid loan and update `customer_2_paid_loan` and `customer_2_unpaid_loan` accordingly.
-- **Socioeconomic Rank Upgrade**: After the payment, check if the customer's total paid loan reaches a threshold for upgrading their socioeconomic rank. The threshold is `10^rank * 1000`. If the threshold is met, increase the customer's rank by one.
+- **Socioeconomic Rank Upgrade**: After the payment, check if the customer's total paid loan reaches a threshold for upgrading their socioeconomic rank. The threshold is `10^rank`. If the threshold is met, increase the customer's rank by one.
   - For instance, if a customer with a rank of 4 pays off a total loan amount reaching $10,000, their rank is upgraded to 5.
 
 ### 15. Upgrading Socioeconomic Rank
 
 The socioeconomic rank of a customer affects their loan eligibility and represents their reliability and financial status within the bank. The upgrade mechanism encourages customers to maintain good financial habits, such as timely loan repayment.
 
-- **Rank Upgrade Criteria**: Once a customer's total paid loan exceeds `10^rank * 1000`, their socioeconomic rank is incremented by one. This progression allows customers to access greater loan amounts and benefits within the bank.
+- **Rank Upgrade Criteria**: Once a customer's total paid loan exceeds `10^rank`, their socioeconomic rank is incremented by one. This progression allows customers to access greater loan amounts and benefits within the bank.
 
 ```cpp
-// Prevents this header file from being included multiple times in the same file
-#ifndef BANK_H
+#ifndef BANK_H // Prevents double inclusion of this header
 #define BANK_H
 
-// Includes necessary libraries and header files
-#include <compare> // For std::strong_ordering, used in comparison operations
-#include <map> // For std::map, a key-value pair container
-#include <optional> // For std::optional, to handle optional parameters
-#include <string> // For std::string, to use string type
-#include <vector> // For std::vector, a dynamic array
+#include <compare>  // For std::strong_ordering
+#include <map>      // For std::map
+#include <optional> // For std::optional
+#include <string>   // For std::string
+#include <vector>   // For std::vector
 
-// Include the Account and Person class headers for their definitions
-#include "Account.h"
-#include "Person.h"
+class Account; // Forward declaration of Account
+class Person; // Forward declaration of Person
 
-/**
- * The Bank class represents a banking institution, encapsulating data and operations
- * related to customers, their accounts, and financial transactions such as deposits,
- * withdrawals, and loans. It provides methods for managing these entities and operations
- * securely and efficiently.
- */
+// Represents a banking institution
 class Bank {
 public:
-    /**
-     * Constructor: Initializes a new Bank object with its name and security fingerprint.
-     *
-     * @param bank_name The name of the bank, represented as a string.
-     * @param bank_fingerprint A unique identifier for the bank's security, also as a string.
-     */
+    // Constructor with bank name and security fingerprint
     Bank(const std::string& bank_name, const std::string& bank_fingerprint);
 
-    /**
-     * Destructor: Handles cleanup of dynamically allocated resources to prevent memory leaks.
-     */
-    ~Bank();
+    ~Bank(); // Destructor
 
-    // Bank Operations
-    Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password); // Creates a new account for a specified owner.
-    bool delete_account(Account& account, const std::string& owner_fingerprint); // Deletes a specified account after verifying owner.
-    bool delete_customer(Person& owner, const std::string& owner_fingerprint); // Deletes a customer and their associated accounts after verification.
-    bool deposit(Account& account, const std::string& owner_fingerprint, double amount); // Deposits money into a specified account after owner verification.
-    bool withdraw(Account& account, const std::string& owner_fingerprint, double amount); // Withdraws money from a specified account after owner verification.
+    // Bank operations
+    Account* create_account(Person& owner, const std::string& owner_fingerprint, std::string password);
+    bool delete_account(Account& account, const std::string& owner_fingerprint);
+    bool delete_customer(Person& owner, const std::string& owner_fingerprint);
+    bool deposit(Account& account, const std::string& owner_fingerprint, double amount);
+    bool withdraw(Account& account, const std::string& owner_fingerprint, double amount);
     bool transfer(Account& source, Account& destination, const std::string& owner_fingerprint,
-                  const std::string& CVV2, const std::string& password, const std::string& exp_date, double amount); // Transfers money between accounts verification.
-    bool take_loan(Account& account, const std::string& owner_fingerprint, double amount); // Grants a loan to a specified account after owner verification.
-    bool pay_loan(Account& account, double amount); // Accepts loan repayment from a specified account.
+                  const std::string& CVV2, const std::string& password, const std::string& exp_date, double amount);
+    bool take_loan(Account& account, const std::string& owner_fingerprint, double amount);
+    bool pay_loan(Account& account, double amount);
 
-    // Accessor methods (Getters)
-    const std::string& get_bank_name() const; // Returns the name of the bank.
-    size_t get_hashed_bank_fingerprint() const; // Returns the hashed bank fingerprint for security.
+    // Getters
+    const std::string& get_bank_name() const;
+    size_t get_hashed_bank_fingerprint() const;
 
-    // Accessor methods requiring bank authentication. (these ARE required for testing)
-    const std::vector<Person*>& get_bank_customers(std::string& bank_fingerprint) const; // Returns the list of bank customers.
-    const std::vector<Account*>& get_bank_accounts(std::string& bank_fingerprint) const; // Returns the list of bank accounts.
-    const std::map<Account*, Person*>& get_account_2_customer_map(std::string& bank_fingerprint) const; // Returns the map from accounts to their owners.
-    const std::map<Person*, std::vector<Account*>>& get_customer_2_accounts_map(std::string& bank_fingerprint) const; // Returns the map from customers to accounts.
-    const std::map<Person*, double>& get_customer_2_paid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of loan paid.
-    const std::map<Person*, double>& get_customer_2_unpaid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of unpaid.
-    double get_bank_total_balance(std::string& bank_fingerprint) const; // Returns the total profit the bank has accumulated.
-    double get_bank_total_loan(std::string& bank_fingerprint) const; // Returns the total amount of loans the bank has issued.
+    // Getters requiring bank authentication
+    const std::vector<Person*>& get_bank_customers(std::string& bank_fingerprint) const;
+    const std::vector<Account*>& get_bank_accounts(std::string& bank_fingerprint) const;
+    const std::map<Account*, Person*>& get_account_2_customer_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, std::vector<Account*>>& get_customer_2_accounts_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, double>& get_customer_2_paid_loan_map(std::string& bank_fingerprint) const;
+    const std::map<Person*, double>& get_customer_2_unpaid_loan_map(std::string& bank_fingerprint) const;
+    double get_bank_total_balance(std::string& bank_fingerprint) const;
+    double get_bank_total_loan(std::string& bank_fingerprint) const;
 
-    // Operators
-    Account* operator[](size_t index) const; // Provides direct access to an account using its index in the bank's list.
+    // Account Setters requiring owner and bank authentication
+    bool set_owner(Account& account, const Person* new_owner, std::string& owner_fingerprint, std::string& bank_fingerprint);
 
-    /**
-     * Outputs information about the bank. If a filename is provided, writes to the file.
-     * Otherwise, prints to standard output. Access restricted to authenticated users.
-     *
-     * @param file_name Optional parameter for output file name.
-     */
+    // Account Setters requiring bank authentication
+    bool set_account_status(Account& account, bool status, std::string& bank_fingerprint);
+    bool set_exp_date(Account& account, std::string& exp_date, std::string& bank_fingerprint);
+
+    // Outputs bank information, supports writing to file
     void get_info(std::optional<std::string> file_name = std::nullopt) const;
 
 private:
     // Private member variables
-    const std::string bank_name; // The bank's name.
-    const size_t hashed_bank_fingerprint; // A hashed version of the bank's fingerprint for security.
-    std::vector<Person*> bank_customers; // A list of pointers to the bank's customers.
-    std::vector<Account*> bank_accounts; // A list of pointers to the bank's accounts.
-    std::map<Account*, Person*> account_2_customer; // Maps accounts to their owners.
-    std::map<Person*, std::vector<Account*>> customer_2_accounts; // Maps customers to their lists of accounts.
-    std::map<Person*, double> customer_2_paid_loan; // Maps customers to the amounts of loans they've repaid.
-    std::map<Person*, double> customer_2_unpaid_loan; // Maps customers to the amounts of loans they owe.
-    double bank_total_balance; // The total profit the bank has accumulated.
-    double bank_total_loan; // The total amount of loans the bank has issued.
+    const std::string bank_name;
+    const size_t hashed_bank_fingerprint;
+    std::vector<Person*> bank_customers;
+    std::vector<Account*> bank_accounts;
+    std::map<Account*, Person*> account_2_customer;
+    std::map<Person*, std::vector<Account*>> customer_2_accounts;
+    std::map<Person*, double> customer_2_paid_loan;
+    std::map<Person*, double> customer_2_unpaid_loan;
+    double bank_total_balance; // Total bank profit
+    double bank_total_loan; // Total loans issued
 };
 
 #endif // BANK_H
