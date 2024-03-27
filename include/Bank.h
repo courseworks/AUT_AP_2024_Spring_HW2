@@ -45,6 +45,20 @@ public:
     bool take_loan(Account& account, const std::string& owner_fingerprint, double amount); // Grants a loan to a specified account after owner verification.
     bool pay_loan(Account& account, double amount); // Accepts loan repayment from a specified account.
 
+    // Accessor methods (Getters)
+    const std::string& get_bank_name() const; // Returns the name of the bank.
+    size_t get_hashed_bank_fingerprint() const; // Returns the hashed bank fingerprint for security.
+
+    // Accessor methods requiring bank authentication. (these ARE required for testing)
+    const std::vector<Person*>& get_bank_customers(std::string& bank_fingerprint) const; // Returns the list of bank customers.
+    const std::vector<Account*>& get_bank_accounts(std::string& bank_fingerprint) const; // Returns the list of bank accounts.
+    const std::map<Account*, Person*>& get_account_2_customer_map(std::string& bank_fingerprint) const; // Returns the map from accounts to their owners.
+    const std::map<Person*, std::vector<Account*>>& get_customer_2_accounts_map(std::string& bank_fingerprint) const; // Returns the map from customers to their accounts.
+    const std::map<Person*, double>& get_customer_2_paid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of loan paid.
+    const std::map<Person*, double>& get_customer_2_unpaid_loan_map(std::string& bank_fingerprint) const; // Returns the map from customers to the amount of loan unpaid.
+    double get_bank_total_balance(std::string& bank_fingerprint) const; // Returns the total profit the bank has accumulated.
+    double get_bank_total_loan(std::string& bank_fingerprint) const; // Returns the total amount of loans the bank has issued.
+
     // Operators
     Account* operator[](size_t index) const; // Provides direct access to an account using its index in the bank's list.
 
