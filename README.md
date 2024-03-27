@@ -156,7 +156,7 @@ public:
     std::string get_exp_date(std::string& owner_fingerprint) const;
 
     // Setters requiring owner's fingerprint for authentication
-    bool set_password(std::string& password, std::string& bank_fingerprint);
+    bool set_password(std::string& password, std::string& owner_fingerprint);
 
     // Spaceship operator for Account comparison
     std::strong_ordering operator<=>(const Account& other) const;
