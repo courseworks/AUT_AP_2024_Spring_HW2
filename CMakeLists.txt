@@ -17,6 +17,7 @@ add_executable(main
         src/Bank.cpp
         src/Account.cpp
         src/Person.cpp
+        src/Utils.cpp
         src/unit_test.cpp
 )
 
