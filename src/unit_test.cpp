@@ -737,8 +737,6 @@ TEST_F(BankTest, Bank_PayLoanSuccessAndRankUpgrade) {
 
     Account* account = bank.create_account(*person, ownerFingerprint, "securePassword");
     bank.deposit(*account, ownerFingerprint, accountBalance); // Deposit a large sum to cover loan amounts
-
-    size_t initialRank = person->get_socioeconomic_rank(); // the rank is 6 right now.
     
     // Loop to simulate taking and repaying loans until the socioeconomic rank is upgraded
     for (size_t i = 0; i < 11; ++i) { // Arbitrary loop limit to prevent infinite loop in case of an error
