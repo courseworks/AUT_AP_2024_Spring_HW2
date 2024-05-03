@@ -393,4 +393,4 @@ int main(int argc, char **argv)
   <img src="./Resource/Thank_us_later.jpg" alt="Say Hello To Other Errors" style="width: 60%;">
 </p>
 
-**Best Regards, Hamidi**
+**Best Regards, [Hamidi](https://github.com/smhamidi)**
